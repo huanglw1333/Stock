@@ -9,7 +9,7 @@ def get_input_info():
 	stock_id = raw_input("Input stock ID: ")
 	total_year = raw_input("Input the number of years: ")
 	expect_divided = raw_input("Input default divided value: ")
-
+	
 	# collect input into a dictionary and return
 	stock_info = {"id":stock_id, "count_year":total_year, "exp_divided":expect_divided}
 	return stock_info
@@ -39,7 +39,8 @@ def get_divided_G(html, count_year, default_divi):
 	element_table = list()
 
 	html.encoding = "utf-8"
-	soup = BeautifulSoup(html.text,'lxml')
+	#soup = BeautifulSoup(html.text,'lxml')                   # avoid parser error in .exe
+	soup = BeautifulSoup(html.text, 'html.parser')
 	table = soup.find_all('table', attrs={"class":"solid_1_padding_3_0_tbl", "width":"100%", "border":"0", "cellpadding":"0", "cellspacing":"0", "bgcolor":"#C2CCD3", "style":"font-size:10pt;"})
 	
 	# sheck stock id valid or not
@@ -70,7 +71,8 @@ def get_PER_H(html):
 	element_PER = list()
 
 	html.encoding = "utf-8"
-	soup = BeautifulSoup(html.text,'lxml')
+	#soup = BeautifulSoup(html.text,'lxml')                   # avoid parser error in .exe
+	soup = BeautifulSoup(html.text, 'html.parser')
 	table = soup.find_all('table', attrs={"class":"tb-stock tb-outline", "cellspacing":"2"})
 	
 	# sheck stock id valid or not
@@ -106,7 +108,9 @@ def get_EPS_Y(html):
 	element_EPS_data = list()
 
 	#html.encoding = "utf-8"
-	soup = BeautifulSoup(html.text,'lxml')
+	
+	#soup = BeautifulSoup(html.text,'lxml')                   # avoid parser error in .exe
+	soup = BeautifulSoup(html.text, 'html.parser')
 	table = soup.find_all("table", attrs={"width":"630", "border":"0", "cellspacing":"1", "cellpadding":"4"})
 
 	# sheck stock id valid or not

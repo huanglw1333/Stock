@@ -1,6 +1,7 @@
 from Tkinter import *
 import crawler_new
- 
+import requests
+
 class GUIDemo(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
