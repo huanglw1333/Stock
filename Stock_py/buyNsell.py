@@ -110,8 +110,13 @@ def req_date_for_data(funds, market, date, key):
 	time.sleep(0.5)
 	return date_reform_data
 
+"""
+Description: Get rank of the other funds.
+"""
 def get_other_funds(funds, market):
 	web_info = get_needed_info(funds)
+
+	# market 0: TSE, 1: OTC
 	if market == 0:
 		other_data = req_date_for_data(funds, "TSE", web_info["date"][0], web_info["key"])
 	else:
@@ -204,9 +209,11 @@ def main_proc(funds):
 			#	else:
 			#		compare_temp.append("N/A")
 
+			# combine compare data for last 4 days
 			main_data_comb["compare_buy"].append(compare_temp_buy)
 			main_data_comb["compare_sell"].append(compare_temp_sell)
 
+		# combine compare data for other funds
 		main_data_comb["compare_buy"].append(compare_other_buy)
 		main_data_comb["compare_sell"].append(compare_other_sell)
 
