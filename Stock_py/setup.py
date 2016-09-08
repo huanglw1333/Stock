@@ -1,12 +1,13 @@
 from distutils.core import setup
 import py2exe
 
-#includes = ['lxml']
-packages = ['requests', 'bs4', 'Tkinter', 'webbrowser']
+includes = ['sys', 'time']
+packages = ['requests', 'bs4', 'Tkinter']
 
 setup(
-	windows = ['tk_ui.py'],
+	windows = ['buyNsell_ui.py'],
 	#console = ['tk_ui.py'],
-	options = {'py2exe': {'packages':packages}},
+	options = {'py2exe': {'packages':packages,
+						  'includes':includes}},
 	data_files = [r'C:\Python27\Lib\site-packages\requests\cacert.pem']
 	)
