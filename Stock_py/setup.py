@@ -2,7 +2,7 @@ from distutils.core import setup
 import py2exe
 
 includes = ['sys', 'time']
-packages = ['requests', 'bs4', 'Tkinter']
+packages = ['requests', 'bs4', 'Tkinter', 'webbrowser']
 
 setup(
 	windows = ['buyNsell_ui.py'],

@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from Tkinter import *
+import webbrowser
 import buyNsell
 import price_calculator
 
