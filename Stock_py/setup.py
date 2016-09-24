@@ -1,11 +1,11 @@
 from distutils.core import setup
 import py2exe
 
-includes = ['sys', 'time']
-packages = ['requests', 'bs4', 'Tkinter', 'webbrowser']
+includes = ['os', 'sys', 'time']
+packages = ['requests', 'bs4', 'Tkinter', 'webbrowser', 'functools']
 
 setup(
-	windows = ['buyNsell_ui.py'],
+	windows = ['stock_ui.py'],
 	#console = ['tk_ui.py'],
 	options = {'py2exe': {'packages':packages,
 						  'includes':includes}},

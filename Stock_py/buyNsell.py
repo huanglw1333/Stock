@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import os
 import sys
 import time
 import requests
@@ -14,6 +15,8 @@ header = {"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (
 session_asp = requests.session()
 select_date = 5
 num_rank = 30
+current_dir = os.getcwd()
+data_dir = current_dir+"\\web_data\\"
 
 """
 Description: Get viewstate, eventvalidation, viewstategenerator, market name and date by requests.get()
@@ -23,10 +26,6 @@ def get_needed_info(funds):
 
 	html = session_asp.get(url[funds], headers = header)
 
-	#fileout = open("cnyes123.html","w")
-	#fileout.write(html.text.encode('utf-8'))
-	#fileout.close()
-	
 	soup = BeautifulSoup(html.text, "html.parser")
 
 	# viewstate and enentvalidation
@@ -53,7 +52,7 @@ def get_needed_info(funds):
 Description: Transfer whole web information to useful data
 """
 def reform_web_data(ori_html):
-	soup = BeautifulSoup(ori_html.text, "html.parser")
+	soup = BeautifulSoup(ori_html, "html.parser")
 	table = soup.find_all("table")
 	#print soup.find_all("option")
 
@@ -73,6 +72,7 @@ def reform_web_data(ori_html):
 		re_data_dict["sell"][i] = re_data_dict["sell"][i].replace("\r\n", "")
 		re_data_dict["sell"][i] = re_data_dict["sell"][i].replace("\t", "")
 
+	
 	return re_data_dict
 
 """
@@ -105,7 +105,12 @@ def req_date_for_data(funds, market, date, key):
 	
 	html_date = session_asp.post(url[funds], headers = header, data = formdata_date)
 	html_date.encoding = "utf-8"
-	date_reform_data = reform_web_data(html_date)
+	date_reform_data = reform_web_data(html_date.text)
+
+	# save data
+	fileout = open(data_dir+funds+"_"+date+"_"+market,"w")
+	fileout.write(html_date.text.encode('utf-8'))
+	fileout.close()
 
 	time.sleep(0.5)
 	return date_reform_data
@@ -115,15 +120,25 @@ Description: Get rank of the other funds.
 """
 def get_other_funds(funds, market):
 	web_info = get_needed_info(funds)
+	other_f_name = funds+"_"+web_info["date"][0]+"_"+market
 
-	# market 0: TSE, 1: OTC
-	if market == 0:
-		other_data = req_date_for_data(funds, "TSE", web_info["date"][0], web_info["key"])
+	if os.path.isfile(data_dir+other_f_name):
+		other_data = file_proc(other_f_name)
 	else:
-		other_data = req_date_for_data(funds, "OTC", web_info["date"][0], web_info["key"])
+		other_data = req_date_for_data(funds, market, web_info["date"][0], web_info["key"])
 
-	time.sleep(0.5)
 	return other_data
+
+"""
+Description: process exist file
+"""
+def file_proc(file_name):
+	filein = open(data_dir+file_name, "r")
+	file_read = filein.read()
+	file_return = reform_web_data(file_read)
+	filein.close()
+
+	return file_return
 
 """
 Description: main task
@@ -135,6 +150,10 @@ def main_proc(funds):
 	##############################################
 	final_main_data = dict()
 
+	# create directory for web data
+	if not os.path.isdir("web_data"):
+		os.mkdir("web_data")
+
 	web_info = get_needed_info(funds)
 
 	# get two market, index 0 for TSE, 1 for OTC
@@ -145,9 +164,9 @@ def main_proc(funds):
 
 		# get other funds to compare
 		if funds == "foreign":
-			other_data_list = get_other_funds("domestic", m)
+			other_data_list = get_other_funds("domestic", web_info["market"][m])
 		else:
-			other_data_list = get_other_funds("foreign", m)
+			other_data_list = get_other_funds("foreign", web_info["market"][m])
 
 		# get data for 5 days
 		for i in range(select_date):
@@ -155,8 +174,11 @@ def main_proc(funds):
 			compare_temp_buy = list()
 			compare_temp_sell = list()
 
-			# get data
-			data_list = req_date_for_data(funds, web_info["market"][m], web_info["date"][i], web_info["key"])
+			# check if file exist and get data
+			if os.path.isfile(data_dir+funds+"_"+web_info["date"][i]+"_"+web_info["market"][m]):
+				data_list = file_proc(funds+"_"+web_info["date"][i]+"_"+web_info["market"][m])
+			else:
+				data_list = req_date_for_data(funds, web_info["market"][m], web_info["date"][i], web_info["key"])
 
 			main_data_comb["buy"].append(data_list["buy"])
 			main_data_comb["sell"].append(data_list["sell"])

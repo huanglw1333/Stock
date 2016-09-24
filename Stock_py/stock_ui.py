@@ -4,6 +4,7 @@ from Tkinter import *
 import webbrowser
 import buyNsell
 import price_calculator
+from functools import partial
 
 global day_select, rank_select
 day_select = buyNsell.select_date
@@ -107,12 +108,19 @@ class GUIDemo(Frame):
 		self.hyperlink.grid(row = 3, column = 0, columnspan = 4)
 		self.hyperlink.bind("<Button-1>", self.callback)
 
+	# put select stock into inputfield
+	def price_callback(self, s_id, redu):
+		# remove last value
+		while(self.inputField.get()):
+			self.inputField.delete(0)
+		self.inputField.insert(0, s_id)
+
 	def out_text_foreign(self):
 		all_data = buyNsell.main_proc("foreign")
 		window1 = Toplevel()
 		window1.grid()
 		window1.title("外資買賣超列表_集中市場")
-		
+				
 		self.label = Label(window1, text = "外資買超").grid(row = 0, column = 0, columnspan = 5)
 		self.label = Label(window1, text = "本日排行").grid(row = 1, column = 0)
 		self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
@@ -131,8 +139,15 @@ class GUIDemo(Frame):
 
 		# display buy and sell list on window
 		for row_t in range(rank_select):
-			self.data1 = Label(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1]).grid(row = row_t+2, column = 0)
-			self.data1 = Label(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1]).grid(row = row_t+2, column = 0 + day_select+1)
+			#self.data1 = Button(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
+			self.data1 = Label(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1])
+			self.data1.grid(row = row_t+2, column = 0)
+			self.data1.bind("<Button-1>", partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2]))
+			#self.data1 = Button(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
+			self.data1 = Label(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1])
+			self.data1.grid(row = row_t+2, column = 0 + day_select+1)
+			self.data1.bind("<Button-1>", partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2]))
+
 			for column_t in range(day_select):
 				if not (all_data["TSE"]["compare_buy"][column_t][row_t][0] == "-" or all_data["TSE"]["compare_buy"][column_t][row_t] == "N/A"):
 					self.data2 = Label(window1, text = all_data["TSE"]["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
@@ -166,8 +181,15 @@ class GUIDemo(Frame):
 
 		# display buy and sell list on window
 		for row_t in range(rank_select):
-			self.data2 = Label(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1]).grid(row = row_t+2, column = 0)
-			self.data2 = Label(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1]).grid(row = row_t+2, column = 0 + day_select+1)
+			#self.data2 = Button(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["OTC"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
+			self.data2 = Label(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1])
+			self.data2.grid(row = row_t+2, column = 0)
+			self.data2.bind("<Button-1>", partial(self.price_callback, all_data["OTC"]["buy"][0][row_t*2]))
+			#self.data2 = Button(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["OTC"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
+			self.data2 = Label(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1])
+			self.data2.grid(row = row_t+2, column = 0 + day_select+1)
+			self.data2.bind("<Button-1>", partial(self.price_callback, all_data["OTC"]["sell"][0][row_t*2]))
+
 			for column_t in range(day_select):
 				if not (all_data["OTC"]["compare_buy"][column_t][row_t][0] == "-" or all_data["OTC"]["compare_buy"][column_t][row_t] == "N/A"):
 					self.data2 = Label(window2, text = all_data["OTC"]["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
@@ -203,8 +225,15 @@ class GUIDemo(Frame):
 
 		# display buy and sell list on window
 		for row_t in range(rank_select):
-			self.data1 = Label(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1]).grid(row = row_t+2, column = 0)
-			self.data1 = Label(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1]).grid(row = row_t+2, column = 0 + day_select+1)
+			#self.data1 = Button(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
+			self.data1 = Label(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1])
+			self.data1.grid(row = row_t+2, column = 0)
+			self.data1.bind("<Button-1>", partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2]))
+			#self.data1 = Button(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
+			self.data1 = Label(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1])
+			self.data1.grid(row = row_t+2, column = 0 + day_select+1)
+			self.data1.bind("<Button-1>", partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2]))
+
 			for column_t in range(day_select):
 				if not (all_data["TSE"]["compare_buy"][column_t][row_t][0] == "-" or all_data["TSE"]["compare_buy"][column_t][row_t] == "N/A"):
 					self.data2 = Label(window1, text = all_data["TSE"]["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
@@ -238,8 +267,14 @@ class GUIDemo(Frame):
 
 		# display buy and sell list on window
 		for row_t in range(rank_select):
-			self.data2 = Label(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1]).grid(row = row_t+2, column = 0)
-			self.data2 = Label(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1]).grid(row = row_t+2, column = 0 + day_select+1)
+			#self.data2 = Button(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["OTC"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
+			self.data2 = Label(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1])
+			self.data2.grid(row = row_t+2, column = 0)
+			self.data2.bind("<Button-1>", partial(self.price_callback, all_data["OTC"]["buy"][0][row_t*2]))
+			#self.data2 = Button(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["OTC"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
+			self.data2 = Label(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1])
+			self.data2.grid(row = row_t+2, column = 0 + day_select+1)
+			self.data2.bind("<Button-1>", partial(self.price_callback, all_data["OTC"]["sell"][0][row_t*2]))
 			for column_t in range(day_select):
 				if not (all_data["OTC"]["compare_buy"][column_t][row_t][0] == "-" or all_data["OTC"]["compare_buy"][column_t][row_t] == "N/A"):
 					self.data2 = Label(window2, text = all_data["OTC"]["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
