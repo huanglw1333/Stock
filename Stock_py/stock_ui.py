@@ -2,9 +2,10 @@
 
 from Tkinter import *
 import webbrowser
+from functools import partial
 import buyNsell
 import price_calculator
-from functools import partial
+import growth_rate
 
 global day_select, rank_select
 day_select = buyNsell.select_date
@@ -18,8 +19,11 @@ class GUIDemo(Frame):
 
 	def createWidgets(self):
 		##### button area ###
-		self.new = Button(self, text = "基準買價與複查買價", height = 2, width = 40, command = self.out_text)
-		self.new.grid(row = 3, column = 0, columnspan = 2, rowspan = 2)
+		self.new = Button(self, text = "成長率圖", height = 2, width = 10, command = self.plot_growth_rate)
+		self.new.grid(row = 3, column = 0, rowspan = 2)
+
+		self.new = Button(self, text = "基準買價與複查買價", height = 2, width = 20, command = self.out_text)
+		self.new.grid(row = 3, column = 1, rowspan = 2)
 
 		self.new = Button(self, text = "外資買賣超排行", height = 3, width = 20, command = self.out_text_foreign)
 		self.new.grid(row = 0, column = 2, columnspan = 2, rowspan = 2, padx = 5, pady = 5)
@@ -286,6 +290,11 @@ class GUIDemo(Frame):
 				else:
 					self.data2 = Label(window2, text = all_data["OTC"]["compare_sell"][column_t][row_t]).grid(row = row_t+2, column = column_t + day_select+1+1)
 				
+
+	def plot_growth_rate(self):
+		# import data
+		u_ID = self.inputField.get()
+		growth_rate.plot_task(u_ID)
 
 if __name__ == '__main__':
     root = Tk()
