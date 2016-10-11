@@ -17,13 +17,14 @@ def get_input_info():
 def get_table(id):
 	# Goodinfo for dividend
 	payload = {"STOCK_ID":id}
-	html_dividend = requests.get("http://goodinfo.tw/StockInfo/StockDividendPolicy.asp", params = payload)
-	
+	header = {"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"}
+	html_dividend = requests.get("http://goodinfo.tw/StockInfo/StockDividendPolicy.asp", params = payload, headers = header)
+
 	html_dividend.encoding = "utf-8"
 	#soup = BeautifulSoup(html.text,'lxml')                   # avoid parser error in .exe
 	soup = BeautifulSoup(html_dividend.text, 'html.parser')
 	table_dividend = soup.find_all('table', attrs={"border":"0", "cellpadding":"0", "cellspacing":"0"})
-
+	
 	# HiStock for EPR and revenue
 	Hi_URL_EPR = "http://histock.tw/stock/financial.aspx?no="+id+"&t=6"
 	html_EPR = requests.get(Hi_URL_EPR)
