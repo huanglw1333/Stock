@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from Tkinter import *
+import tkMessageBox
 import webbrowser
 from functools import partial
 import thread
@@ -11,6 +12,7 @@ import growth_rate
 global day_select, rank_select
 day_select = buyNsell.select_date
 rank_select = buyNsell.num_rank
+version = "V_1.0"
 
 class GUIDemo(Frame):
 	def __init__(self, master=None):
@@ -123,9 +125,19 @@ class GUIDemo(Frame):
 			self.inputField.delete(0)
 		self.inputField.insert(0, s_id)
 
+	def except_proc(self, message):
+		show_msg = "=============== Please try again ===============\n" + str(message[0]) + str(message[1]) + str(message[2])
+		tkMessageBox.showerror("Error", show_msg)
+
 	def out_text_buyNsell(self, F_or_D, lock):
 		lock.acquire()
-		all_data = buyNsell.main_proc(F_or_D)
+		try:
+			all_data = buyNsell.main_proc(F_or_D)
+		except:
+			self.except_proc(list(sys.exc_info()))
+			lock.release()
+			return
+
 		window1 = Toplevel()
 		window2 = Toplevel()
 		window1.grid()
@@ -255,5 +267,5 @@ class GUIDemo(Frame):
 if __name__ == '__main__':
     root = Tk()
     app = GUIDemo(master=root)
-    app.master.title("定存股查詢兼買賣超列表")
+    app.master.title("定存股查詢兼買賣超列表 - [LiLi, %s]" % version)
     app.mainloop()
