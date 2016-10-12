@@ -4,7 +4,6 @@ from Tkinter import *
 import tkMessageBox
 import webbrowser
 from functools import partial
-import thread
 import buyNsell
 import price_calculator
 import growth_rate
@@ -28,13 +27,10 @@ class GUIDemo(Frame):
 		self.new = Button(self, text = "基準買價與複查買價", height = 2, width = 20, command = self.out_text)
 		self.new.grid(row = 3, column = 1, rowspan = 2)
 
-		# create lock for buy and sell thread
-		lock = thread.allocate_lock()
-
-		self.new = Button(self, text = "外資買賣超排行", height = 3, width = 20, command = partial(self.out_text_thread, self.out_text_buyNsell, "foreign", lock))
+		self.new = Button(self, text = "外資買賣超排行", height = 3, width = 20, command = partial(self.out_text_buyNsell, "foreign"))
 		self.new.grid(row = 0, column = 2, columnspan = 2, rowspan = 2, padx = 5, pady = 5)
 
-		self.new = Button(self, text = "投信買賣超排行", height = 3, width = 20, command = partial(self.out_text_thread, self.out_text_buyNsell, "domestic", lock))
+		self.new = Button(self, text = "投信買賣超排行", height = 3, width = 20, command = partial(self.out_text_buyNsell, "domestic"))
 		self.new.grid(row = 2, column = 2, columnspan = 2, rowspan = 2, padx = 5, pady = 5)
 
 		# ###### Input area #######
@@ -129,13 +125,11 @@ class GUIDemo(Frame):
 		show_msg = "=============== Please try again ===============\n" + str(message[0]) + str(message[1]) + str(message[2])
 		tkMessageBox.showerror("Error", show_msg)
 
-	def out_text_buyNsell(self, F_or_D, lock):
-		lock.acquire()
+	def out_text_buyNsell(self, F_or_D):
 		try:
 			all_data = buyNsell.main_proc(F_or_D)
 		except:
 			self.except_proc(list(sys.exc_info()))
-			lock.release()
 			return
 
 		window1 = Toplevel()
@@ -158,19 +152,6 @@ class GUIDemo(Frame):
 					self.label = Label(window1, text = "    投信    ").grid(row = 1, column = index+1)
 					self.label = Label(window1, text = "    投信    ").grid(row = 1, column = index+1 + day_select+1)
 
-			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
-			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2)
-			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3)
-			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4)
-			#self.label = Label(window1, text = "    投信    ").grid(row = 1, column = 5)
-
-			
-			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			#self.label = Label(window1, text = "    投信    ").grid(row = 1, column = 5 + day_select+1)
-
 			window2.title("外資買賣超列表_店頭市場")
 			self.label = Label(window2, text = "外資買超").grid(row = 0, column = 0, columnspan = day_select+1)
 			self.label = Label(window2, text = "本日排行").grid(row = 1, column = 0)
@@ -185,17 +166,6 @@ class GUIDemo(Frame):
 					self.label = Label(window2, text = "    投信    ").grid(row = 1, column = index+1)
 					self.label = Label(window2, text = "    投信    ").grid(row = 1, column = index+1 + day_select+1)
 
-			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1)
-			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2)
-			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3)
-			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4)
-			#self.label = Label(window2, text = "    投信    ").grid(row = 1, column = 5)
-
-			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			#self.label = Label(window2, text = "    投信    ").grid(row = 1, column = 5 + day_select+1)
 		else:
 			window1.title("投信買賣超列表_集中市場")
 			self.label = Label(window1, text = "投信買超").grid(row = 0, column = 0, columnspan = day_select+1)
@@ -211,18 +181,6 @@ class GUIDemo(Frame):
 					self.label = Label(window1, text = "    外資    ").grid(row = 1, column = index+1)
 					self.label = Label(window1, text = "    外資    ").grid(row = 1, column = index+1 + day_select+1)
 
-			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
-			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2)
-			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3)
-			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4)
-			#self.label = Label(window1, text = "    外資    ").grid(row = 1, column = 5)
-
-			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			#self.label = Label(window1, text = "    外資    ").grid(row = 1, column = 5 + day_select+1)
-
 			window2.title("投信買賣超列表_店頭市場")
 			self.label = Label(window2, text = "投信買超").grid(row = 0, column = 0, columnspan = day_select+1)
 			self.label = Label(window2, text = "本日排行").grid(row = 1, column = 0)
@@ -236,18 +194,6 @@ class GUIDemo(Frame):
 				else:
 					self.label = Label(window2, text = "    外資    ").grid(row = 1, column = index+1)
 					self.label = Label(window2, text = "    外資    ").grid(row = 1, column = index+1 + day_select+1)
-
-			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1)
-			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2)
-			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3)
-			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4)
-			#self.label = Label(window2, text = "    外資    ").grid(row = 1, column = 5)
-			
-			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			#self.label = Label(window2, text = "    外資    ").grid(row = 1, column = 5 + day_select+1)
 
 		# display buy and sell list on window1
 		for row_t in range(rank_select):
@@ -291,15 +237,9 @@ class GUIDemo(Frame):
 					self.data2 = Label(window2, text = all_data["OTC"]["compare_sell"][column_t][row_t], bg = "green").grid(row = row_t+2, column = column_t + day_select+1+1)
 				else:
 					self.data2 = Label(window2, text = all_data["OTC"]["compare_sell"][column_t][row_t]).grid(row = row_t+2, column = column_t + day_select+1+1)
-		lock.release()
-	
-	def out_text_thread(self, callback_fun, F_or_D, lock):
-		thread.start_new_thread(callback_fun, (F_or_D, lock,))
 
 	def plot_growth_rate(self):
 		# import data
-		#u_ID = self.inputField.get()
-		#growth_rate.plot_task(u_ID)
 		if not self.inputField.get():
 			return
 
