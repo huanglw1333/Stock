@@ -118,14 +118,21 @@ def req_date_for_data(funds, market, date, key):
 """
 Description: Get rank of the other funds.
 """
-def get_other_funds(funds, market):
+def get_other_funds(funds, market, date):
 	web_info = get_needed_info(funds)
-	other_f_name = funds+"_"+web_info["date"][0]+"_"+market
+
+	# check if the date is not the same, return None
+	if web_info["date"].count(date) == 0:
+		other_data = None
+		return other_data
+	
+	#other_f_name = funds+"_"+web_info["date"][0]+"_"+market
+	other_f_name = funds+"_"+date+"_"+market
 
 	if os.path.isfile(data_dir+other_f_name):
 		other_data = file_proc(other_f_name)
 	else:
-		other_data = req_date_for_data(funds, market, web_info["date"][0], web_info["key"])
+		other_data = req_date_for_data(funds, market, date, web_info["key"])
 
 	return other_data
 
@@ -164,9 +171,9 @@ def main_proc(funds):
 
 		# get other funds to compare
 		if funds == "foreign":
-			other_data_list = get_other_funds("domestic", web_info["market"][m])
+			other_data_list = get_other_funds("domestic", web_info["market"][m], web_info["date"][0])
 		else:
-			other_data_list = get_other_funds("foreign", web_info["market"][m])
+			other_data_list = get_other_funds("foreign", web_info["market"][m], web_info["date"][0])
 
 		# get data for 5 days
 		for i in range(select_date):
@@ -206,7 +213,7 @@ def main_proc(funds):
 					compare_temp_sell.append("N/A")
 
 				# compare other funds
-				if i == 4:
+				if i == select_date-1 and not other_data_list == None:
 					# buy
 					if main_data_comb["buy"][0][j*2] in other_data_list["buy"][0::2]:
 						compare_other_buy.append(str(other_data_list["buy"][0::2].index(main_data_comb["buy"][0][j*2]) + 1))
@@ -222,6 +229,9 @@ def main_proc(funds):
 						compare_other_sell.append("+" + str(other_data_list["buy"][0::2].index(main_data_comb["sell"][0][j*2]) + 1))
 					else:
 						compare_other_sell.append("N/A")
+				elif i == select_date-1 and other_data_list == None:
+					compare_other_buy.append("-")
+					compare_other_sell.append("-")
 
 			#for item in main_data_comb["buy"][0][0::2]:
 			#	if item in data_list["buy"][0::2]:

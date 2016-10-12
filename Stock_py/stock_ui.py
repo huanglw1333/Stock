@@ -145,72 +145,109 @@ class GUIDemo(Frame):
 
 		if F_or_D == "foreign":
 			window1.title("外資買賣超列表_集中市場")
-			self.label = Label(window1, text = "外資買超").grid(row = 0, column = 0, columnspan = 5)
+			self.label = Label(window1, text = "外資買超").grid(row = 0, column = 0, columnspan = day_select+1)
 			self.label = Label(window1, text = "本日排行").grid(row = 1, column = 0)
-			self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
-			self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2)
-			self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3)
-			self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4)
-			self.label = Label(window1, text = "    投信    ").grid(row = 1, column = 5)
-
-			self.label = Label(window1, text = "外資賣超").grid(row = 0, column = 0 + day_select+1, columnspan = 5)
+			self.label = Label(window1, text = "外資賣超").grid(row = 0, column = 0 + day_select+1, columnspan = day_select+1)
 			self.label = Label(window1, text = "本日排行").grid(row = 1, column = 0 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			self.label = Label(window1, text = "    投信    ").grid(row = 1, column = 5 + day_select+1)
+
+			for index in range(day_select):
+				if index < (day_select-1):
+					self.label = Label(window1, text = all_data["date"][index+1]).grid(row = 1, column = index+1)
+					self.label = Label(window1, text = all_data["date"][index+1]).grid(row = 1, column = index+1 + day_select+1)
+				else:
+					self.label = Label(window1, text = "    投信    ").grid(row = 1, column = index+1)
+					self.label = Label(window1, text = "    投信    ").grid(row = 1, column = index+1 + day_select+1)
+
+			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
+			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2)
+			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3)
+			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4)
+			#self.label = Label(window1, text = "    投信    ").grid(row = 1, column = 5)
+
+			
+			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
+			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
+			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
+			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
+			#self.label = Label(window1, text = "    投信    ").grid(row = 1, column = 5 + day_select+1)
 
 			window2.title("外資買賣超列表_店頭市場")
-			self.label = Label(window2, text = "外資買超").grid(row = 0, column = 0, columnspan = 5)
+			self.label = Label(window2, text = "外資買超").grid(row = 0, column = 0, columnspan = day_select+1)
 			self.label = Label(window2, text = "本日排行").grid(row = 1, column = 0)
-			self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1)
-			self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2)
-			self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3)
-			self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4)
-			self.label = Label(window2, text = "    投信    ").grid(row = 1, column = 5)
-
-			self.label = Label(window2, text = "外資賣超").grid(row = 0, column = 0 + day_select+1, columnspan = 5)
+			self.label = Label(window2, text = "外資賣超").grid(row = 0, column = 0 + day_select+1, columnspan = day_select+1)
 			self.label = Label(window2, text = "本日排行").grid(row = 1, column = 0 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			self.label = Label(window2, text = "    投信    ").grid(row = 1, column = 5 + day_select+1)
+
+			for index in range(day_select):
+				if index < (day_select-1):
+					self.label = Label(window2, text = all_data["date"][index+1]).grid(row = 1, column = index+1)
+					self.label = Label(window2, text = all_data["date"][index+1]).grid(row = 1, column = index+1 + day_select+1)
+				else:
+					self.label = Label(window2, text = "    投信    ").grid(row = 1, column = index+1)
+					self.label = Label(window2, text = "    投信    ").grid(row = 1, column = index+1 + day_select+1)
+
+			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1)
+			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2)
+			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3)
+			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4)
+			#self.label = Label(window2, text = "    投信    ").grid(row = 1, column = 5)
+
+			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
+			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
+			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
+			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
+			#self.label = Label(window2, text = "    投信    ").grid(row = 1, column = 5 + day_select+1)
 		else:
 			window1.title("投信買賣超列表_集中市場")
-			self.label = Label(window1, text = "投信買超").grid(row = 0, column = 0, columnspan = 5)
+			self.label = Label(window1, text = "投信買超").grid(row = 0, column = 0, columnspan = day_select+1)
 			self.label = Label(window1, text = "本日排行").grid(row = 1, column = 0)
-			self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
-			self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2)
-			self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3)
-			self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4)
-			self.label = Label(window1, text = "    外資    ").grid(row = 1, column = 5)
-
-			self.label = Label(window1, text = "投信賣超").grid(row = 0, column = 0 + day_select+1, columnspan = 5)
+			self.label = Label(window1, text = "投信賣超").grid(row = 0, column = 0 + day_select+1, columnspan = day_select+1)
 			self.label = Label(window1, text = "本日排行").grid(row = 1, column = 0 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			self.label = Label(window1, text = "    外資    ").grid(row = 1, column = 5 + day_select+1)
+
+			for index in range(day_select):
+				if index < (day_select-1):
+					self.label = Label(window1, text = all_data["date"][index+1]).grid(row = 1, column = index+1)
+					self.label = Label(window1, text = all_data["date"][index+1]).grid(row = 1, column = index+1 + day_select+1)
+				else:
+					self.label = Label(window1, text = "    外資    ").grid(row = 1, column = index+1)
+					self.label = Label(window1, text = "    外資    ").grid(row = 1, column = index+1 + day_select+1)
+
+			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1)
+			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2)
+			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3)
+			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4)
+			#self.label = Label(window1, text = "    外資    ").grid(row = 1, column = 5)
+
+			#self.label = Label(window1, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
+			#self.label = Label(window1, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
+			#self.label = Label(window1, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
+			#self.label = Label(window1, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
+			#self.label = Label(window1, text = "    外資    ").grid(row = 1, column = 5 + day_select+1)
 
 			window2.title("投信買賣超列表_店頭市場")
-			self.label = Label(window2, text = "投信買超").grid(row = 0, column = 0, columnspan = 5)
+			self.label = Label(window2, text = "投信買超").grid(row = 0, column = 0, columnspan = day_select+1)
 			self.label = Label(window2, text = "本日排行").grid(row = 1, column = 0)
-			self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1)
-			self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2)
-			self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3)
-			self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4)
-			self.label = Label(window2, text = "    外資    ").grid(row = 1, column = 5)
-
-			self.label = Label(window2, text = "投信賣超").grid(row = 0, column = 0 + day_select+1, columnspan = 5)
+			self.label = Label(window2, text = "投信賣超").grid(row = 0, column = 0 + day_select+1, columnspan = day_select+1)
 			self.label = Label(window2, text = "本日排行").grid(row = 1, column = 0 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
-			self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
-			self.label = Label(window2, text = "    外資    ").grid(row = 1, column = 5 + day_select+1)
+
+			for index in range(day_select):
+				if index < (day_select-1):
+					self.label = Label(window2, text = all_data["date"][index+1]).grid(row = 1, column = index+1)
+					self.label = Label(window2, text = all_data["date"][index+1]).grid(row = 1, column = index+1 + day_select+1)
+				else:
+					self.label = Label(window2, text = "    外資    ").grid(row = 1, column = index+1)
+					self.label = Label(window2, text = "    外資    ").grid(row = 1, column = index+1 + day_select+1)
+
+			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1)
+			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2)
+			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3)
+			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4)
+			#self.label = Label(window2, text = "    外資    ").grid(row = 1, column = 5)
+			
+			#self.label = Label(window2, text = all_data["date"][1]).grid(row = 1, column = 1 + day_select+1)
+			#self.label = Label(window2, text = all_data["date"][2]).grid(row = 1, column = 2 + day_select+1)
+			#self.label = Label(window2, text = all_data["date"][3]).grid(row = 1, column = 3 + day_select+1)
+			#self.label = Label(window2, text = all_data["date"][4]).grid(row = 1, column = 4 + day_select+1)
+			#self.label = Label(window2, text = "    外資    ").grid(row = 1, column = 5 + day_select+1)
 
 		# display buy and sell list on window1
 		for row_t in range(rank_select):
@@ -261,8 +298,17 @@ class GUIDemo(Frame):
 
 	def plot_growth_rate(self):
 		# import data
-		u_ID = self.inputField.get()
-		growth_rate.plot_task(u_ID)
+		#u_ID = self.inputField.get()
+		#growth_rate.plot_task(u_ID)
+		if not self.inputField.get():
+			return
+
+		try:
+			u_ID = self.inputField.get()
+			growth_rate.plot_task(u_ID)
+		except:
+			self.except_proc(list(sys.exc_info()))
+			return
 
 if __name__ == '__main__':
     root = Tk()

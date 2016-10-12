@@ -3,7 +3,7 @@ import py2exe
 import matplotlib
 
 includes = ['os', 'sys', 'time']
-packages = ['requests', 'bs4', 'Tkinter', 'webbrowser', 'functools', 'matplotlib', 'FileDialog']
+packages = ['requests', 'bs4', 'Tkinter', 'tkMessageBox', 'webbrowser', 'functools', 'matplotlib', 'FileDialog']
 # for matplotlib
 excludes = ['libgdk_pixbuf-2.0-0.dll', 'libgobject-2.0-0.dll',  'libgdk-win32-2.0-0.dll']
 
