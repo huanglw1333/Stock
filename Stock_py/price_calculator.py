@@ -61,7 +61,7 @@ def get_current_price_G(table):
 		return "Error"
 
 	# get current price
-	current_price_t = table[2].find_all('tr', attrs={"align":"center", "bgcolor":"white", "height":"26px"})
+	current_price_t = table[2].find_all('tr', attrs={"align":"center", "bgcolor":"white", "height":"24px"})
 	current_price = current_price_t[0].find("td").string
 	
 	return current_price
