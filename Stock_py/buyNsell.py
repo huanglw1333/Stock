@@ -67,12 +67,13 @@ def reform_web_data(ori_html):
 	re_data_dict = {"buy":buy_table, "sell":sell_table}
 
 	for i in range(0, len(re_data_dict["buy"]), 2):
-		re_data_dict["buy"][i] = re_data_dict["buy"][i].replace("\r\n", "")
+		re_data_dict["buy"][i] = re_data_dict["buy"][i].replace("\r", "")
+		re_data_dict["buy"][i] = re_data_dict["buy"][i].replace("\n", "")
 		re_data_dict["buy"][i] = re_data_dict["buy"][i].replace("\t", "")
-		re_data_dict["sell"][i] = re_data_dict["sell"][i].replace("\r\n", "")
+		re_data_dict["sell"][i] = re_data_dict["sell"][i].replace("\r", "")
+		re_data_dict["sell"][i] = re_data_dict["sell"][i].replace("\n", "")
 		re_data_dict["sell"][i] = re_data_dict["sell"][i].replace("\t", "")
 
-	
 	return re_data_dict
 
 """
@@ -108,8 +109,8 @@ def req_date_for_data(funds, market, date, key):
 	date_reform_data = reform_web_data(html_date.text)
 
 	# save data
-	fileout = open(data_dir+funds+"_"+date+"_"+market,"w")
-	fileout.write(html_date.text.encode('utf-8'))
+	fileout = open(data_dir+funds+"_"+date+"_"+market, "w", encoding = "utf-8")
+	fileout.write(html_date.text)
 	fileout.close()
 
 	time.sleep(0.5)
@@ -140,7 +141,7 @@ def get_other_funds(funds, market, date):
 Description: process exist file
 """
 def file_proc(file_name):
-	filein = open(data_dir+file_name, "r")
+	filein = open(data_dir+file_name, "r", encoding = "utf-8")
 	file_read = filein.read()
 	file_return = reform_web_data(file_read)
 	filein.close()

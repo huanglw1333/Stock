@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import sys
-import lxml
+#import lxml
 import requests
 from bs4 import BeautifulSoup
 
@@ -40,7 +40,7 @@ def get_table(id):
 	#soup = BeautifulSoup(html.text,'lxml')                   # avoid parser error in .exe
 	soup = BeautifulSoup(html_revenue.text, 'html.parser')
 	table_revenue = soup.find_all('table', attrs={"class":"tb-stock text-center"})
-	revenue_title = unicode(soup.title.string)                # get stock revenue title
+	revenue_title = soup.title.string               # get stock revenue title
 
 	# Yahoo for EPS, need user-agent headers
 	headers_Y = {"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"}
@@ -110,8 +110,8 @@ def get_PER_H(table):
 	# get wanted element(本益比) into a element_table(list)
 	for item in rows:
 		element_table = item.find_all("td", attrs={"style":"width:50px;"})
-		
-		for i in range(len(item)/2):
+
+		for i in range(int(len(item)/2)):
 			element_PER.append(float(element_table[i].string))
 	
 	# delete oldest 5 months, total 60 months
@@ -158,8 +158,10 @@ def get_EPS_Y(table):
 	# get first 4 row
 	for i in range(len(rows)-1):
 		element_table = rows[i].find_all("td", attrs={"align":"center"})
-		element_EPS.append(str(element_table[1].string.encode("utf8")))
+		#element_EPS.append(str(element_table[1].string.encode("utf8")))
+		element_EPS.append(element_table[1].string)
 
+	print (element_EPS)
 	# delete 元 in each element
 	for i in range(len(element_EPS)):
 		element_EPS_data.append(float(element_EPS[i][0:3]))

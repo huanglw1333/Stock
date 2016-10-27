@@ -1,7 +1,9 @@
 # coding=utf-8
 
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+from tkinter import messagebox
+#import tkMessageBox
+import traceback
 import webbrowser
 from functools import partial
 import buyNsell
@@ -11,7 +13,7 @@ import growth_rate
 global day_select, rank_select
 day_select = buyNsell.select_date
 rank_select = buyNsell.num_rank
-version = "V_1.0"
+version = "V_2.0"
 
 class GUIDemo(Frame):
 	def __init__(self, master=None):
@@ -122,8 +124,9 @@ class GUIDemo(Frame):
 		self.inputField.insert(0, s_id)
 
 	def except_proc(self, message):
-		show_msg = "=============== Please try again ===============\n" + str(message[0]) + str(message[1]) + str(message[2])
-		tkMessageBox.showerror("Error", show_msg)
+		#show_msg = "=============== Please try again ===============\n" + str(message[0]) + str(message[1]) + str(message[2])
+		err_callstack = traceback.format_exc()
+		messagebox.showerror("Error", err_callstack)
 
 	def out_text_buyNsell(self, F_or_D):
 		try:

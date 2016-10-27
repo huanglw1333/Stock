@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import sys
-import lxml
+#import lxml
 import requests
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ def request_data(id):
 				"Accept-Language":"zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4",
 				"Content-Type":"application/x-www-form-urlencoded",
 				"Host":"goodinfo.tw",
-				"Origin:http":"http://goodinfo.tw",
+				"Origin":"http://goodinfo.tw",
 				"Referer":"http://goodinfo.tw/StockInfo/ShowSaleMonChart.asp?STOCK_ID=" + id,
 				"User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"}
 	data = {"STOCK_ID":id, "STEP":"DATA", "CHT-CAT":"10Y"}
