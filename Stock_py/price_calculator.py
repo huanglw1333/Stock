@@ -82,9 +82,12 @@ def get_dividend_G(table, count_year, default_divi):
 	# get wanted row data(表格內數據, table index "5") in table
 	rows_dividend = table[5].find_all("tr", attrs={"align":"center", "height":"23px"})
 	
+	# check read column
+	read_col = 5 if (rows_dividend[4].find_all("td"))[7].string == '-' else 4
+
 	# get wanted element(年度與殖利率) into a element_table(list)
 	for y in range(int(count_year)):
-		element_table = rows_dividend[y + 4].find_all("td")
+		element_table = rows_dividend[y + read_col].find_all("td")
 		sum_dividend_float += float(element_table[7].string)
 
 	########## end of reformat ##########
@@ -161,7 +164,7 @@ def get_EPS_Y(table):
 		#element_EPS.append(str(element_table[1].string.encode("utf8")))
 		element_EPS.append(element_table[1].string)
 
-	print (element_EPS)
+	# print (element_EPS)
 	# delete 元 in each element
 	for i in range(len(element_EPS)):
 		element_EPS_data.append(float(element_EPS[i][0:3]))
