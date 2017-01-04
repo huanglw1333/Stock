@@ -6,14 +6,17 @@ from tkinter import messagebox
 import traceback
 import webbrowser
 from functools import partial
+import threading
 import buyNsell
 import price_calculator
 import growth_rate
 
 global day_select, rank_select
-day_select = buyNsell.select_date
+day_select 	= buyNsell.select_date
 rank_select = buyNsell.num_rank
-version = "V_2.0"
+version 	= "V_2.1"
+global_lock = threading.Lock()
+sync_lock 	= threading.Lock()
 
 class GUIDemo(Frame):
 	def __init__(self, master=None):
@@ -23,16 +26,16 @@ class GUIDemo(Frame):
 
 	def createWidgets(self):
 		##### button area ###
-		self.new = Button(self, text = "成長率圖", height = 2, width = 10, command = self.plot_growth_rate)
+		self.new = Button(self, text = "成長率圖", height = 2, width = 10, command = partial(self.plot_growth_rate))
 		self.new.grid(row = 3, column = 0, rowspan = 2)
 
-		self.new = Button(self, text = "基準買價與複查買價", height = 2, width = 20, command = self.out_text)
+		self.new = Button(self, text = "基準買價與複查買價", height = 2, width = 20, command = partial(self.out_text_threading, self.out_text))
 		self.new.grid(row = 3, column = 1, rowspan = 2)
 
-		self.new = Button(self, text = "外資買賣超排行", height = 3, width = 20, command = partial(self.out_text_buyNsell, "foreign"))
+		self.new = Button(self, text = "外資買賣超排行", height = 3, width = 20, command = partial(self.out_text_buyNsell_threading, self.out_text_buyNsell, "foreign"))
 		self.new.grid(row = 0, column = 2, columnspan = 2, rowspan = 2, padx = 5, pady = 5)
 
-		self.new = Button(self, text = "投信買賣超排行", height = 3, width = 20, command = partial(self.out_text_buyNsell, "domestic"))
+		self.new = Button(self, text = "投信買賣超排行", height = 3, width = 20, command = partial(self.out_text_buyNsell_threading, self.out_text_buyNsell, "domestic"))
 		self.new.grid(row = 2, column = 2, columnspan = 2, rowspan = 2, padx = 5, pady = 5)
 
 		# ###### Input area #######
@@ -57,9 +60,8 @@ class GUIDemo(Frame):
 		webbrowser.open_new(url_river)
 
 	def out_text(self):
-		window1 = Toplevel()
-		window1.grid()
-		window1.title("買價查詢")
+		global sync_lock
+		sync_lock.acquire()
 
 		revenue_topic = ["年/月", "單月月增", "單月年增", "累積年增"]
 		# import data
@@ -78,7 +80,16 @@ class GUIDemo(Frame):
 			u_dividend = "6.67"
 
 		# process basic and second price
-		result = price_calculator.start_cal(u_ID, u_Year, u_dividend)
+		try:
+			result = price_calculator.start_cal(u_ID, u_Year, u_dividend)
+		except:
+			self.except_proc(list(sys.exc_info()))
+			sync_lock.release()
+			return
+
+		window1 = Toplevel()
+		window1.grid()
+		window1.title("買價查詢")
 
 		self.displayText_p = Label(window1, text = "Current price: %s" % result["price"][2])
 		self.displayText_p.grid(row = 0, column = 0, columnspan = 4)
@@ -115,6 +126,10 @@ class GUIDemo(Frame):
 		self.hyperlink = Label(window1, text = "河流圖在這裡", fg="blue", cursor="hand2")
 		self.hyperlink.grid(row = 3, column = 0, columnspan = 4)
 		self.hyperlink.bind("<Button-1>", self.callback)
+		sync_lock.release()
+
+	def out_text_threading(self, call):
+		threading.Thread(target = call).start()
 
 	# put select stock into inputfield
 	def price_callback(self, s_id, redu):
@@ -129,10 +144,13 @@ class GUIDemo(Frame):
 		messagebox.showerror("Error", err_callstack)
 
 	def out_text_buyNsell(self, F_or_D):
+		global global_lock
+		global_lock.acquire()
 		try:
 			all_data = buyNsell.main_proc(F_or_D)
 		except:
 			self.except_proc(list(sys.exc_info()))
+			global_lock.release()
 			return
 
 		window1 = Toplevel()
@@ -241,7 +259,15 @@ class GUIDemo(Frame):
 				else:
 					self.data2 = Label(window2, text = all_data["OTC"]["compare_sell"][column_t][row_t]).grid(row = row_t+2, column = column_t + day_select+1+1)
 
+		global_lock.release()
+
+	def out_text_buyNsell_threading(self, call, arg1):
+		bNs_thread = threading.Thread(target = call, args = (arg1,))
+		bNs_thread.start()
+
 	def plot_growth_rate(self):
+		global sync_lock
+		sync_lock.acquire()
 		# import data
 		if not self.inputField.get():
 			return
@@ -251,7 +277,15 @@ class GUIDemo(Frame):
 			growth_rate.plot_task(u_ID)
 		except:
 			self.except_proc(list(sys.exc_info()))
+			sync_lock.release()
 			return
+		sync_lock.release()
+
+	"""
+	### pyplot must in the tkinter main thread, can not threading ###
+	def plot_growth_rate_threading(self, call):
+		threading.Thread(target = call).start()
+	"""
 
 if __name__ == '__main__':
     root = Tk()
