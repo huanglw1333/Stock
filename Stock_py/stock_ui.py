@@ -14,7 +14,7 @@ import growth_rate
 global day_select, rank_select
 day_select 	= buyNsell.select_date
 rank_select = buyNsell.num_rank
-version 	= "V_2.1"
+version 	= "V_2.1.1"
 global_lock = threading.Lock()
 sync_lock 	= threading.Lock()
 
@@ -60,7 +60,6 @@ class GUIDemo(Frame):
 		webbrowser.open_new(url_river)
 
 	def out_text(self):
-		global sync_lock
 		sync_lock.acquire()
 
 		revenue_topic = ["年/月", "單月月增", "單月年增", "累積年增"]
@@ -68,16 +67,22 @@ class GUIDemo(Frame):
 		u_ID = self.inputField.get()
 		u_Year = self.inputField1.get()
 		u_dividend = self.inputField2.get()
+		
+		# notice popout window
+		window_p = Toplevel()
 
 		# check input data
 		if not self.inputField.get():
-			self.displayText_p = Label(window1, text = "!!!!!!!要輸入股票阿蠢貨!!!!!!!", bd = 10)
-			self.displayText_p.grid(row = 0, column = 0, columnspan = 2)
+			self.proc = Label(window_p, text = "!!!!!!!要輸入股票阿蠢貨!!!!!!!", bd = 10)
+			self.proc.grid(row = 0, column = 0, columnspan = 2)
+			sync_lock.release()
 			return
 		if not self.inputField1.get():
 			u_Year = "5"
 		if not self.inputField2.get():
 			u_dividend = "6.67"
+
+		self.proc = Label(window_p, text = "calPrice processing...").grid(row = 0, column = 0)
 
 		# process basic and second price
 		try:
@@ -87,6 +92,10 @@ class GUIDemo(Frame):
 			sync_lock.release()
 			return
 
+		# destroy notice popout window
+		window_p.destroy()
+
+		# result popout window
 		window1 = Toplevel()
 		window1.grid()
 		window1.title("買價查詢")
@@ -144,15 +153,23 @@ class GUIDemo(Frame):
 		messagebox.showerror("Error", err_callstack)
 
 	def out_text_buyNsell(self, F_or_D):
-		global global_lock
 		global_lock.acquire()
+
+		# notice popout window
+		window_p = Toplevel()
+		self.proc = Label(window_p, text = "bNs processing...").grid(row = 0, column = 0)
+
 		try:
 			all_data = buyNsell.main_proc(F_or_D)
 		except:
 			self.except_proc(list(sys.exc_info()))
+			window_p.destroy()
 			global_lock.release()
 			return
+		# destroy notice popout window
+		window_p.destroy()
 
+		# result popout window, window1 for 集中市場, window2 for 店頭市場
 		window1 = Toplevel()
 		window2 = Toplevel()
 		window1.grid()
@@ -217,56 +234,41 @@ class GUIDemo(Frame):
 					self.label = Label(window2, text = "    外資    ").grid(row = 1, column = index+1 + day_select+1)
 
 		# display buy and sell list on window1
-		for row_t in range(rank_select):
-			#self.data1 = Button(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
-			self.data1 = Label(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1])
-			self.data1.grid(row = row_t+2, column = 0)
-			self.data1.bind("<Button-1>", partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2]))
-			#self.data1 = Button(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
-			self.data1 = Label(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1])
-			self.data1.grid(row = row_t+2, column = 0 + day_select+1)
-			self.data1.bind("<Button-1>", partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2]))
-
-			for column_t in range(day_select):
-				if not (all_data["TSE"]["compare_buy"][column_t][row_t][0] == "-" or all_data["TSE"]["compare_buy"][column_t][row_t] == "N/A"):
-					self.data2 = Label(window1, text = all_data["TSE"]["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
-				else:
-					self.data2 = Label(window1, text = all_data["TSE"]["compare_buy"][column_t][row_t]).grid(row = row_t+2, column = column_t+1)
-
-				if all_data["TSE"]["compare_sell"][column_t][row_t][0] == "-":
-					self.data2 = Label(window1, text = all_data["TSE"]["compare_sell"][column_t][row_t], bg = "green").grid(row = row_t+2, column = column_t + day_select+1+1)
-				else:
-					self.data2 = Label(window1, text = all_data["TSE"]["compare_sell"][column_t][row_t]).grid(row = row_t+2, column = column_t + day_select+1+1)
+		self.bNs_result_display(all_data["TSE"], window1)
 
 		# display buy and sell list on window2
-		for row_t in range(rank_select):
-			#self.data2 = Button(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["OTC"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
-			self.data2 = Label(window2, text = all_data["OTC"]["buy"][0][row_t*2]+" "+all_data["OTC"]["buy"][0][row_t*2+1])
-			self.data2.grid(row = row_t+2, column = 0)
-			self.data2.bind("<Button-1>", partial(self.price_callback, all_data["OTC"]["buy"][0][row_t*2]))
-			#self.data2 = Button(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["OTC"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
-			self.data2 = Label(window2, text = all_data["OTC"]["sell"][0][row_t*2]+" "+all_data["OTC"]["sell"][0][row_t*2+1])
-			self.data2.grid(row = row_t+2, column = 0 + day_select+1)
-			self.data2.bind("<Button-1>", partial(self.price_callback, all_data["OTC"]["sell"][0][row_t*2]))
-			for column_t in range(day_select):
-				if not (all_data["OTC"]["compare_buy"][column_t][row_t][0] == "-" or all_data["OTC"]["compare_buy"][column_t][row_t] == "N/A"):
-					self.data2 = Label(window2, text = all_data["OTC"]["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
-				else:
-					self.data2 = Label(window2, text = all_data["OTC"]["compare_buy"][column_t][row_t]).grid(row = row_t+2, column = column_t+1)
-
-				if all_data["OTC"]["compare_sell"][column_t][row_t][0] == "-":
-					self.data2 = Label(window2, text = all_data["OTC"]["compare_sell"][column_t][row_t], bg = "green").grid(row = row_t+2, column = column_t + day_select+1+1)
-				else:
-					self.data2 = Label(window2, text = all_data["OTC"]["compare_sell"][column_t][row_t]).grid(row = row_t+2, column = column_t + day_select+1+1)
-
+		self.bNs_result_display(all_data["OTC"], window2)
+		
 		global_lock.release()
+
+	def bNs_result_display(self, fund, window):
+		for row_t in range(rank_select):
+			#self.data1 = Button(window1, text = all_data["TSE"]["buy"][0][row_t*2]+" "+all_data["TSE"]["buy"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["buy"][0][row_t*2])).grid(row = row_t+2, column = 0)
+			self.data1 = Label(window, text = fund["buy"][0][row_t*2]+" "+fund["buy"][0][row_t*2+1])
+			self.data1.grid(row = row_t+2, column = 0)
+			self.data1.bind("<Button-1>", partial(self.price_callback, fund["buy"][0][row_t*2]))
+			#self.data1 = Button(window1, text = all_data["TSE"]["sell"][0][row_t*2]+" "+all_data["TSE"]["sell"][0][row_t*2+1], command = partial(self.price_callback, all_data["TSE"]["sell"][0][row_t*2])).grid(row = row_t+2, column = 0 + day_select+1)
+			self.data1 = Label(window, text = fund["sell"][0][row_t*2]+" "+fund["sell"][0][row_t*2+1])
+			self.data1.grid(row = row_t+2, column = 0 + day_select+1)
+			self.data1.bind("<Button-1>", partial(self.price_callback, fund["sell"][0][row_t*2]))
+
+			for column_t in range(day_select):
+				if not (fund["compare_buy"][column_t][row_t][0] == "-" or fund["compare_buy"][column_t][row_t] == "N/A"):
+					self.data2 = Label(window, text = fund["compare_buy"][column_t][row_t], bg = "red").grid(row = row_t+2, column = column_t+1)
+				else:
+					self.data2 = Label(window, text = fund["compare_buy"][column_t][row_t]).grid(row = row_t+2, column = column_t+1)
+
+				if fund["compare_sell"][column_t][row_t][0] == "-":
+					self.data2 = Label(window, text = fund["compare_sell"][column_t][row_t], bg = "green").grid(row = row_t+2, column = column_t + day_select+1+1)
+				else:
+					self.data2 = Label(window, text = fund["compare_sell"][column_t][row_t]).grid(row = row_t+2, column = column_t + day_select+1+1)
+
 
 	def out_text_buyNsell_threading(self, call, arg1):
 		bNs_thread = threading.Thread(target = call, args = (arg1,))
 		bNs_thread.start()
 
 	def plot_growth_rate(self):
-		global sync_lock
 		sync_lock.acquire()
 		# import data
 		if not self.inputField.get():
